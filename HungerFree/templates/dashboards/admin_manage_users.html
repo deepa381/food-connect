@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">User & Organization Management</h2>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-primary text-white">Active NGOs</div>
+                        <div class="card-body">
+                            {% comment %} Iterate over provided userprofiles and show those that are NGOs and approved {% endcomment %}
+                            {% with showed=False %}{% endwith %}
+                            {% if active_ngos %}
+                                <ul class="list-group">
+                                    {% for p in active_ngos %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong>{{ p.user.username }}</strong><br>
+                                                <small class="text-muted">{{ p.user.email }}</small>
+                                            </div>
+                                            <div>
+                                                <span class="badge bg-success">Approved</span>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <div class="alert alert-light">No active NGOs found.</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-danger text-white">Rejected NGOs</div>
+                        <div class="card-body">
+                            {% if rejected_ngos %}
+                                <ul class="list-group">
+                                    {% for p in rejected_ngos %}
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong>{{ p.user.username }}</strong><br>
+                                                <small class="text-muted">{{ p.user.email }}</small>
+                                            </div>
+                                            <div>
+                                                <span class="badge bg-danger">Rejected</span>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <div class="alert alert-light">No rejected NGO registrations.</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-success text-white">Active Donors</div>
+                        <div class="card-body">
+                            {% if donors %}
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Verified</th>
+                                                <th>Joined</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for d in donors %}
+                                                <tr>
+                                                    <td>{{ d.name }}</td>
+                                                    <td>{{ d.email }}</td>
+                                                    <td>{% if d.is_verified %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}</td>
+                                                    <td>{{ d.created_at|date:"M d, Y" }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-light">No donors found.</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}

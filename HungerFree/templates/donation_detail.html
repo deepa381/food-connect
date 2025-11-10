@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0">
+                            <i class="bi bi-box-seam me-2"></i>{{ donation.title }}
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <span class="badge bg-{% if donation.status == 'Available' %}success{% elif donation.status == 'Reserved' %}warning{% else %}secondary{% endif %} fs-6">
+                                {{ donation.status }}
+                            </span>
+                            {% if donation.expire_priority == 'urgent' %}
+                                <span class="badge bg-danger ms-2">Urgent - Expires Today!</span>
+                            {% elif donation.expire_priority == 'soon' %}
+                                <span class="badge bg-warning ms-2 text-dark">Expires Tomorrow</span>
+                            {% elif donation.expire_priority == 'expired' %}
+                                <span class="badge bg-secondary ms-2">Expired</span>
+                            {% else %}
+                                <span class="badge bg-success ms-2">Fresh</span>
+                            {% endif %}
+                        </div>
+
+                        {% if donation.description %}
+                        <p class="lead">{{ donation.description }}</p>
+                        {% endif %}
+
+                        <hr>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <p><strong><i class="bi bi-speedometer2 text-warning me-2"></i>Quantity:</strong> 
+                                   {{ donation.quantity }} {{ donation.unit }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong><i class="bi bi-calendar-event text-info me-2"></i>Expiry Date:</strong> 
+                                   {{ donation.expiry_date|date:"F d, Y" }}</p>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <p><strong><i class="bi bi-geo-alt text-danger me-2"></i>Location:</strong> 
+                                   {{ donation.location }}</p>
+                            </div>
+                            {% if donation.donor %}
+                            <div class="col-md-6">
+                                <p><strong><i class="bi bi-person-fill text-primary me-2"></i>Donor:</strong> 
+                                   {{ donation.donor.name }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        {% if donation.nutritional_info %}
+                        <div class="mb-3">
+                            <h6><i class="bi bi-heart-pulse me-2"></i>Nutritional Information</h6>
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <pre class="mb-0">{{ donation.nutritional_info|safe }}</pre>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if donation.status == 'Available' %}
+                        <div class="mt-4">
+                            <a href="{% url 'donation_request_pickup' donation.id %}" class="btn btn-success btn-lg">
+                                <i class="bi bi-hand-thumbs-up me-2"></i>Request Pickup
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0">Donation Details</h6>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Created:</strong> {{ donation.created_at|date:"F d, Y" }}</p>
+                        <p><strong>Last Updated:</strong> {{ donation.updated_at|date:"F d, Y" }}</p>
+                        {% if donation.pickup_by %}
+                        <p><strong>Pickup By:</strong> {{ donation.pickup_by|date:"F d, Y H:i" }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if pickup_requests %}
+                <div class="card shadow">
+                    <div class="card-header bg-info text-white">
+                        <h6 class="mb-0">Pickup Requests</h6>
+                    </div>
+                    <div class="card-body">
+                        {% for request in pickup_requests %}
+                        <div class="mb-3 pb-3 border-bottom">
+                            <p><strong>{{ request.requester_name }}</strong></p>
+                            <p class="small text-muted mb-1">{{ request.requester_email }}</p>
+                            <p class="small text-muted mb-1">{{ request.requester_phone }}</p>
+                            <span class="badge bg-{% if request.status == 'Approved' %}success{% elif request.status == 'Pending' %}warning{% else %}secondary{% endif %}">
+                                {{ request.status }}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

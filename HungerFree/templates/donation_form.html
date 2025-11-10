@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0">
+                            <i class="bi bi-plus-circle me-2"></i>Add New Donation
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="POST" action="{% url 'donation_add' %}">
+                            {% csrf_token %}
+                            
+                            {% if not user.is_authenticated %}
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="donor_name" class="form-label">Your Name *</label>
+                                    <input type="text" class="form-control" id="donor_name" name="donor_name" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="donor_email" class="form-label">Your Email *</label>
+                                    <input type="email" class="form-control" id="donor_email" name="donor_email" required>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Donation Title *</label>
+                                <input type="text" class="form-control" id="title" name="title" 
+                                       placeholder="e.g., Fresh Vegetable Curry" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="3"
+                                          placeholder="Describe the food item, ingredients, preparation method, etc."></textarea>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="quantity" class="form-label">Quantity *</label>
+                                    <input type="number" class="form-control" id="quantity" name="quantity" 
+                                           min="1" value="1" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="unit" class="form-label">Unit *</label>
+                                    <select class="form-select" id="unit" name="unit" required>
+                                        <option value="servings" selected>Servings</option>
+                                        <option value="kg">Kilograms</option>
+                                        <option value="pieces">Pieces</option>
+                                        <option value="packets">Packets</option>
+                                        <option value="containers">Containers</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="location" class="form-label">Location *</label>
+                                <input type="text" class="form-control" id="location" name="location" 
+                                       placeholder="e.g., Mumbai, Maharashtra" required>
+                                <small class="form-text text-muted">City or area where the donation is available</small>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="latitude" class="form-label">Latitude (optional)</label>
+                                    <input type="number" step="any" class="form-control" id="latitude" name="latitude">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="longitude" class="form-label">Longitude (optional)</label>
+                                    <input type="number" step="any" class="form-control" id="longitude" name="longitude">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="expiry_date" class="form-label">Expiry Date *</label>
+                                <input type="date" class="form-control" id="expiry_date" name="expiry_date" required>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="bi bi-check-circle me-2"></i>Submit Donation
+                                </button>
+                                <a href="{% url 'donations' %}" class="btn btn-outline-secondary">
+                                    Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Set minimum date to today
+    document.getElementById('expiry_date').min = new Date().toISOString().split('T')[0];
+    
+    // Auto-detect location if browser supports geolocation
+    document.getElementById('location').addEventListener('focus', function() {
+        if (navigator.geolocation && !this.value) {
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    let lat = position.coords.latitude;
+                    let lon = position.coords.longitude;
+                    
+                    document.getElementById('latitude').value = lat.toFixed(6);
+                    document.getElementById('longitude').value = lon.toFixed(6);
+                    
+                    // Reverse geocode
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            let city = data.address.city || data.address.town || data.address.village || '';
+                            document.getElementById('location').value = city;
+                        });
+                },
+                function() {
+                    console.log('Geolocation not available');
+                }
+            );
+        }
+    });
+</script>
+{% endblock %}
+

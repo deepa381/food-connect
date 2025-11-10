@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="container py-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Nutrition Analysis Result</h4>
+                </div>
+                <div class="card-body">
+                    <h5>Ingredients</h5>
+                    <p class="text-muted">{{ ingredients }}</p>
+
+                    <h5>Analysis</h5>
+                    <pre class="bg-light p-3 rounded">{{ analysis }}</pre>
+
+                    <a href="{% url 'donor_nutrition_analysis' %}" class="btn btn-outline-secondary mt-3">Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0">
+                            <i class="bi bi-hand-thumbs-up me-2"></i>Request Pickup
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <strong>Donation:</strong> {{ donation.title }}<br>
+                            <strong>Location:</strong> {{ donation.location }}
+                        </div>
+
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="POST" action="{% url 'donation_request_pickup' donation.id %}">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label for="requester_name" class="form-label">Your Name *</label>
+                                <input type="text" class="form-control" id="requester_name" name="requester_name" 
+                                       value="{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% endif %}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="requester_email" class="form-label">Your Email *</label>
+                                <input type="email" class="form-control" id="requester_email" name="requester_email" 
+                                       value="{% if user.is_authenticated %}{{ user.email }}{% endif %}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="requester_phone" class="form-label">Your Phone *</label>
+                                <input type="tel" class="form-control" id="requester_phone" name="requester_phone" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="notes" class="form-label">Additional Notes</label>
+                                <textarea class="form-control" id="notes" name="notes" rows="3"
+                                          placeholder="Any specific instructions or notes for pickup..."></textarea>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="bi bi-check-circle me-2"></i>Submit Request
+                                </button>
+                                <a href="{% url 'donation_detail' donation.id %}" class="btn btn-outline-secondary">
+                                    Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

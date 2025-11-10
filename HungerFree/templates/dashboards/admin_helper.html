@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="py-5">
+  <div class="container">
+    <h2 class="mb-4">Unapproved NGOs</h2>
+
+    {% if pending %}
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Registered At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for profile in pending %}
+            <tr>
+              <td>{{ profile.user.username }}</td>
+              <td>{{ profile.user.email }}</td>
+              <td>{{ profile.created_at|date:"M d, Y" }}</td>
+              <td>
+                <form method="post" style="display:inline-block;">
+                  {% csrf_token %}
+                  <input type="hidden" name="approve_user_id" value="{{ profile.user.id }}">
+                  <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                </form>
+                <form method="post" style="display:inline-block; margin-left:8px;">
+                  {% csrf_token %}
+                  <input type="hidden" name="reject_user_id" value="{{ profile.user.id }}">
+                  <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="alert alert-success">No unapproved NGOs.</div>
+    {% endif %}
+
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary mt-3">Back to Admin Dashboard</a>
+  </div>
+</section>
+{% endblock %}

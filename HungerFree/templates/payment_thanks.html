@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow text-center">
+                    <div class="card-body py-5">
+                        <div class="mb-4">
+                            <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+                        </div>
+                        <h2 class="mb-3">Payment Successful!</h2>
+                        <p class="lead text-muted mb-4">
+                            Thank you for your contribution to fighting food waste and hunger.
+                        </p>
+
+                        <div class="card bg-light mb-4">
+                            <div class="card-body">
+                                <h6 class="card-title">Payment Details</h6>
+                                <p class="mb-1"><strong>Payment ID:</strong> {{ payment.payment_id }}</p>
+                                <p class="mb-1"><strong>Amount:</strong> ₹{{ payment.amount }}</p>
+                                <p class="mb-1"><strong>Gateway:</strong> {{ payment.gateway }}</p>
+                                <p class="mb-0"><strong>Status:</strong> 
+                                    <span class="badge bg-success">{{ payment.status }}</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        {% if payment.receipt_sent %}
+                        <div class="alert alert-success">
+                            <i class="bi bi-envelope-check me-2"></i>
+                            Receipt has been sent to {{ payment.receipt_email }}
+                        </div>
+                        {% endif %}
+
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'home' %}" class="btn btn-success btn-lg">
+                                <i class="bi bi-house me-2"></i>Return to Home
+                            </a>
+                            <a href="{% url 'donations' %}" class="btn btn-outline-success">
+                                <i class="bi bi-box-seam me-2"></i>Browse Donations
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

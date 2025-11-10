@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="mb-0">Nearby Available Donations</h2>
+                    <p class="text-muted mb-0">Food donations available for pickup</p>
+                </div>
+                <a href="{% url 'ngo_dashboard' %}" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+
+            {% if nearby_donations %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Donor</th>
+                            <th>Location</th>
+                            <th>Quantity</th>
+                            <th>Expires</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for donation in nearby_donations %}
+                        <tr>
+                            <td>
+                                <strong>{{ donation.title }}</strong>
+                                {% if donation.description %}
+                                <div class="small text-muted">{{ donation.description|truncatechars:100 }}</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if donation.donor %}
+                                <strong>{{ donation.donor.name }}</strong>
+                                {% if donation.donor.city %}
+                                <div class="small text-muted">{{ donation.donor.city }}</div>
+                                {% endif %}
+                                {% else %}
+                                Anonymous
+                                {% endif %}
+                            </td>
+                            <td>{{ donation.location }}</td>
+                            <td>{{ donation.quantity }} {{ donation.unit }}</td>
+                            <td>
+                                {{ donation.expiry_date|date:"M d, Y" }}
+                                {% if donation.is_urgent %}
+                                <span class="badge bg-danger ms-1">Urgent</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-{% if donation.status == 'Available' %}success{% elif donation.status == 'Reserved' %}warning{% else %}secondary{% endif %}">
+                                    {{ donation.status }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if donation.status == 'Available' %}
+                                <a href="{% url 'ngo_request_pickup' donation.id %}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-truck me-1"></i>Request Pickup
+                                </a>
+                                {% else %}
+                                <button class="btn btn-sm btn-secondary" disabled>
+                                    <i class="bi bi-lock me-1"></i>{{ donation.status }}
+                                </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>No available donations found nearby at the moment.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

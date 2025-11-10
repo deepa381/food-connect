@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="container py-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Nutrition Analysis</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Enter ingredients or a short description of the donated food to get a quick nutrition estimate.</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Ingredients / Description</label>
+                            <textarea name="ingredients" class="form-control" rows="4" placeholder="e.g., 2 kg cooked rice, 1 kg dal"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Meal Type (optional)</label>
+                            <select name="meal_type" class="form-select">
+                                <option value="">Select</option>
+                                <option value="Breakfast">Breakfast</option>
+                                <option value="Lunch">Lunch</option>
+                                <option value="Dinner">Dinner</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-success">Analyze</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

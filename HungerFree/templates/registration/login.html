@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow">
+                    <div class="card-header bg-success text-white text-center">
+                        <h4 class="mb-0">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>FoodSaver Login
+                        </h4>
+                    </div>
+                    <div class="card-body p-4">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="POST" action="{% url 'login' %}">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" 
+                                       placeholder="Enter your username" required autofocus>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" 
+                                       placeholder="Enter your password" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="role" class="form-label">Login as</label>
+                                <select id="role" name="role" class="form-select" required>
+                                    <option value="Donor">Donor</option>
+                                    <option value="NGO">NGO</option>
+                                    <option value="Admin">Admin</option>
+                                </select>
+                            </div>
+                            <div class="form-text text-muted mb-3">Select the role that matches your account (Donor / NGO / Admin).</div>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                                </button>
+                            </div>
+                        </form>
+
+                        <hr class="my-4">
+
+                        <div class="text-center">
+                            <p class="mb-0">Don't have an account?</p>
+                            <a href="{% url 'register' %}" class="btn btn-outline-primary mt-2">
+                                <i class="bi bi-person-plus me-2"></i>Register Now
+                            </a>
+                        </div>
+
+                        <div class="text-center mt-3">
+                            <a href="{% url 'home' %}" class="text-muted text-decoration-none">
+                                <i class="bi bi-arrow-left me-1"></i>Back to Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

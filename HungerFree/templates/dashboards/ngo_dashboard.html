@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <!-- Welcome Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="display-4 fw-bold text-primary">
+                    <i class="bi bi-building me-3"></i>Welcome, Approved NGO!
+                </h1>
+                <p class="lead text-muted">Manage your food requirements and connect with donors in your community.</p>
+            </div>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Info Section -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card bg-light border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h3 class="card-title mb-3">
+                            <i class="bi bi-info-circle-fill text-primary me-2"></i>Manage Your Food Requirements
+                        </h3>
+                        <p class="card-text lead">
+                            Manage your food requirements, update your profile, and see matched donations. 
+                            Use the calendar to schedule when you need food, and browse nearby available donations.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-calendar-check-fill text-primary" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Food Calendar</h5>
+                        <p class="card-text">Schedule when you need food donations and set quantity requirements.</p>
+                        <a href="{% url 'ngo_calendar' %}" class="btn btn-primary">
+                            <i class="bi bi-calendar me-2"></i>Open Calendar</a>
+                        <a href="{% url 'ngo_nearby_donations' %}" class="btn btn-outline-primary mt-2">
+                            <i class="bi bi-geo-alt me-2"></i>Browse Nearby Donations
+                            <i class="bi bi-calendar me-2"></i>Manage Calendar
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-bell-fill text-warning" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Post Food Request</h5>
+                        <p class="card-text">Quickly post an urgent food requirement for your NGO so donors in your area get notified.</p>
+                        <!-- Quick modal-style simple POST form -->
+                        <form method="post" action="{% url 'ngo_calendar' %}" class="mt-2">
+                            {% csrf_token %}
+                            <div class="mb-2">
+                                <input type="date" name="required_date" class="form-control form-control-sm" required />
+                            </div>
+                            <div class="mb-2">
+                                <input type="time" name="required_time" class="form-control form-control-sm" required />
+                            </div>
+                            <div class="mb-2">
+                                <input type="number" name="estimated_servings" min="1" placeholder="Servings needed" class="form-control form-control-sm" required />
+                            </div>
+                            <button class="btn btn-warning btn-sm" type="submit">Post Request</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-clipboard-check text-info" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Schedule Management</h5>
+                        <p class="card-text">View and manage your scheduled pickups and food requirements.</p>
+                        <a href="{% url 'ngo_calendar' %}" class="btn btn-info">
+                            <i class="bi bi-list-check me-2"></i>View Schedule
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Chatbot quick access for NGOs -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-robot text-info" style="font-size: 2.5rem;"></i>
+                        <h5 class="card-title mt-3">AI Chatbot</h5>
+                        <p class="card-text">Quick access to the AI assistant for planning and storage guidance.</p>
+                        <a href="{% url 'chatbot' %}" class="btn btn-info">
+                            <i class="bi bi-chat-dots me-2"></i>Open Chatbot
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Requirements -->
+        {% if requirements %}
+        <div class="row">
+            <div class="col-12">
+                <h4 class="mb-3">
+                    <i class="bi bi-calendar-event me-2"></i>Upcoming Food Requirements
+                </h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Servings Needed</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for requirement in requirements|slice:":5" %}
+                            <tr>
+                                <td>{{ requirement.required_date|date:"M d, Y" }}</td>
+                                <td>{{ requirement.required_time|time:"H:i" }}</td>
+                                <td>{{ requirement.estimated_servings }}</td>
+                                <td>
+                                    <span class="badge bg-{% if requirement.status == 'Fulfilled' %}success{% elif requirement.status == 'Pending' %}warning{% else %}secondary{% endif %}">
+                                        {{ requirement.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3 text-end">
+                    <a href="{% url 'ngo_history' %}" class="btn btn-sm btn-outline-primary">View Full History</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Available Donations & Impact -->
+        <div class="row mb-4">
+            <div class="col-md-8 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="bi bi-box-seam me-2"></i>Available Donations Near You</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <a class="btn btn-sm {% if filter_mode == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}" href="?filter=all">All ({{ available_donations|length }})</a>
+                                <a class="btn btn-sm {% if filter_mode == 'pending' %}btn-primary{% else %}btn-outline-primary{% endif %} ms-2" href="?filter=pending">Pending Pickups ({{ available_not_completed_count }})</a>
+                            </div>
+                            <div class="text-end">
+                                <div class="mb-1">
+                                    <small class="text-muted">Completed: <span class="badge bg-success">{{ available_completed_count }}</span></small>
+                                    <small class="text-muted ms-2">Not Completed: <span class="badge bg-secondary">{{ available_not_completed_count }}</span></small>
+                                </div>
+                                <div class="mt-2">
+                                    <a href="{% url 'ngo_history' %}" class="btn btn-sm btn-primary">Open NGO History</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% if filtered_donations %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Donor</th>
+                                            <th>Quantity</th>
+                                            <th>Expires</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in filtered_donations %}
+                                        <tr>
+                                            <td>{{ item.donation.title }}</td>
+                                            <td>{% if item.donation.donor %}{{ item.donation.donor.name }}{% else %}Anonymous{% endif %}</td>
+                                            <td>{{ item.donation.quantity }} {{ item.donation.unit }}</td>
+                                            <td>{{ item.donation.expiry_date|date:"M d, Y" }}</td>
+                                            <td>
+                                                {% if item.is_completed %}
+                                                    <span class="badge bg-success">Completed</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">Not Completed</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'ngo_request_pickup' item.donation.id %}" class="btn btn-sm btn-primary">Request Pickup</a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-light">No available donations found nearby.</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="bi bi-bar-chart me-2"></i>Impact Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Total Received Servings:</strong> {{ total_received_servings }}</p>
+                        <p><strong>Available Donations Completed:</strong> <span class="badge bg-success">{{ available_completed_count }}</span></p>
+                        <p><strong>Available Donations Not Completed:</strong> <span class="badge bg-secondary">{{ available_not_completed_count }}</span></p>
+                        <p><strong>Estimated Calories Received:</strong> {{ total_calories }}</p>
+                        <p><strong>Estimated Protein Received (g):</strong> {{ total_protein }}</p>
+                        <hr />
+                        <h6>Donors in your area</h6>
+                        {% if donors %}
+                            <ul class="list-group list-group-flush">
+                                {% for d in donors|slice:":8" %}
+                                    <li class="list-group-item">
+                                        <strong>{{ d.name }}</strong><br>
+                                        <small class="text-muted">{{ d.email }}</small>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <div class="alert alert-light">No donors found in your area.</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NGO quick links: nutrition, history, donors, donate money -->
+        <div class="row mt-4">
+            <div class="col-md-3 mb-3">
+                <div class="card shadow-sm text-center p-3">
+                    <h6>Nutrition Analysis</h6>
+                    <a href="{% url 'ngo_nutrition_analysis' %}" class="btn btn-outline-primary btn-sm mt-2">Analyze</a>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card shadow-sm text-center p-3">
+                    <h6>Donation History</h6>
+                    <a href="{% url 'ngo_history' %}" class="btn btn-outline-primary btn-sm mt-2">View</a>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card shadow-sm text-center p-3">
+                    <h6>Donors List</h6>
+                    <a href="{% url 'ngo_donors' %}" class="btn btn-outline-primary btn-sm mt-2">View</a>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card shadow-sm text-center p-3">
+                    <h6>Donate Money</h6>
+                    <a href="https://www.akshayapatra.org/" target="_blank" rel="noopener" class="btn btn-warning btn-sm mt-2">Donate</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

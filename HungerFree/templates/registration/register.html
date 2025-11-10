@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-header bg-success text-white text-center">
+                        <h4 class="mb-0">
+                            <i class="bi bi-person-plus me-2"></i>Register for FoodSaver
+                        </h4>
+                    </div>
+                    <div class="card-body p-4">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="POST" action="{% url 'register' %}">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username *</label>
+                                <input type="text" class="form-control" id="username" name="username" 
+                                       placeholder="Enter your username" required autofocus>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="email" name="email" 
+                                       placeholder="Enter your email" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password *</label>
+                                <input type="password" class="form-control" id="password" name="password" 
+                                       placeholder="Enter your password" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password_confirm" class="form-label">Confirm Password *</label>
+                                <input type="password" class="form-control" id="password_confirm" name="password_confirm" 
+                                       placeholder="Confirm your password" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="role" class="form-label">Select Your Role *</label>
+                                <select class="form-select" id="role" name="role" required>
+                                    <option value="">-- Select Role --</option>
+                                    <option value="Donor">Donor - I want to donate food</option>
+                                    <option value="NGO">NGO - I need food donations (requires approval)</option>
+                                    <option value="Admin">Admin - platform administrator (invite code required)</option>
+                                </select>
+                                <small class="form-text text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    NGO accounts require admin approval before accessing the dashboard.
+                                </small>
+                            </div>
+
+                            <!-- Additional fields for NGO registration -->
+                            <div id="ngo_fields" style="display: none;">
+                                <hr>
+                                <h6 class="mb-3">NGO Information</h6>
+                                
+                                <div class="mb-3">
+                                    <label for="ngo_name" class="form-label">NGO Name *</label>
+                                    <input type="text" class="form-control" id="ngo_name" name="ngo_name" 
+                                           placeholder="Enter your NGO name">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="contact_person" class="form-label">Contact Person *</label>
+                                    <input type="text" class="form-control" id="contact_person" name="contact_person" 
+                                           placeholder="Enter contact person name">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Phone Number</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone" 
+                                           placeholder="Enter phone number">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">Address</label>
+                                    <textarea class="form-control" id="address" name="address" rows="2" 
+                                              placeholder="Enter address"></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="city" class="form-label">City</label>
+                                    <input type="text" class="form-control" id="city" name="city" 
+                                           placeholder="Enter city">
+                                </div>
+                            </div>
+
+                            <!-- Additional fields for Admin registration -->
+                            <div id="admin_fields" style="display: none;">
+                                <hr>
+                                <h6 class="mb-3">Admin Invitation</h6>
+                                <div class="mb-3">
+                                    <label for="admin_invite_code" class="form-label">Admin Invite Code</label>
+                                    <input type="text" class="form-control" id="admin_invite_code" name="admin_invite_code" placeholder="Enter admin invite code">
+                                </div>
+                                <small class="form-text text-muted">Admin registration requires a valid invite code.</small>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="bi bi-check-circle me-2"></i>Register
+                                </button>
+                                <a href="{% url 'login' %}" class="btn btn-outline-secondary">
+                                    Already have an account? Login
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Show/hide NGO fields based on role selection
+    document.getElementById('role').addEventListener('change', function() {
+        const ngoFields = document.getElementById('ngo_fields');
+        const adminFields = document.getElementById('admin_fields');
+        if (this.value === 'NGO') {
+            ngoFields.style.display = 'block';
+            if (adminFields) adminFields.style.display = 'none';
+        } else {
+            ngoFields.style.display = 'none';
+        }
+        if (this.value === 'Admin') {
+            if (adminFields) adminFields.style.display = 'block';
+        } else {
+            if (adminFields) adminFields.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}
+

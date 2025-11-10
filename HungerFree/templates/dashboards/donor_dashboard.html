@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <!-- Welcome Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="display-4 fw-bold text-success">
+                    <i class="bi bi-heart-fill me-3"></i>Welcome, Donor!
+                </h1>
+                <p class="lead text-muted">Thank you for helping reduce food waste and fight hunger in your community.</p>
+            </div>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Call to Action Section -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="card bg-light border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h3 class="card-title mb-3">
+                            <i class="bi bi-megaphone-fill text-success me-2"></i>Ready to Make a Donation?
+                        </h3>
+                        <p class="card-text lead">
+                            View your past donation history and add new food donations. Every contribution makes a difference!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-plus-circle-fill text-success" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Upload Food</h5>
+                        <p class="card-text">Add a new food donation with AI nutrition analysis.</p>
+                        <a href="{% url 'donor_upload_food' %}" class="btn btn-success">
+                            <i class="bi bi-upload me-2"></i>Upload Now</a>
+                        <a href="{% url 'donor_nearby_donations' %}" class="btn btn-outline-success mt-2">
+                            <i class="bi bi-geo-alt me-2"></i>View Nearby Donations
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-activity text-info" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Nutrition Analysis</h5>
+                        <p class="card-text">Get AI-powered nutrition analysis for your food items.</p>
+                        <a href="{% url 'donor_nutrition_analysis' %}" class="btn btn-info">
+                            <i class="bi bi-heart-pulse me-2"></i>Analyze
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-clock-history text-primary" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Donation History</h5>
+                        <p class="card-text">Track your past donations and their impact.</p>
+                        <a href="{% url 'donor_history' %}" class="btn btn-primary">
+                            <i class="bi bi-list-ul me-2"></i>View History
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Actions (Donate Money & AI Chatbot) -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-cash-stack text-warning" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Donate Money</h5>
+                        <p class="card-text">Support NGOs and meal programs with monetary donations.</p>
+                        <!-- External payment integration or gateway link -->
+                        <a href="https://www.akshayapatra.org/" target="_blank" rel="noopener" class="btn btn-warning">
+                            <i class="bi bi-currency-inr me-2"></i>Donate Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-robot text-info" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">AI Chatbot</h5>
+                        <p class="card-text">Get AI-powered pre-preparation guidance to reduce food waste.</p>
+                        <a href="{% url 'chatbot' %}" class="btn btn-info">
+                            <i class="bi bi-chat-dots me-2"></i>Open Chatbot
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Donations Preview -->
+        {% if my_donations %}
+        <div class="row">
+            <div class="col-12">
+                <h4 class="mb-3">
+                    <i class="bi bi-box-seam me-2"></i>Your Recent Donations
+                </h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Quantity</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for donation in my_donations %}
+                            <tr>
+                                <td>{{ donation.title }}</td>
+                                <td>{{ donation.quantity }} {{ donation.unit }}</td>
+                                <td>
+                                    <span class="badge bg-{% if donation.status == 'Available' %}success{% elif donation.status == 'Reserved' %}warning{% else %}secondary{% endif %}">
+                                        {{ donation.status }}
+                                    </span>
+                                </td>
+                                <td>{{ donation.created_at|date:"M d, Y" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3 text-end">
+                    <a href="{% url 'donor_history' %}" class="btn btn-sm btn-outline-primary">View Full History</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Upcoming NGO Requirements (help donors choose meaningful donations) -->
+        {% if upcoming_requirements %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <h4 class="mb-3">
+                    <i class="bi bi-bell me-2"></i>Nearby NGO Requests
+                </h4>
+                <div class="list-group">
+                    {% for req in upcoming_requirements|slice:":6" %}
+                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong>{{ req.ngo.name }}</strong>
+                            <div class="small text-muted">{{ req.required_date|date:"M d, Y" }} at {{ req.required_time|time:"H:i" }} &middot; {{ req.estimated_servings }} servings</div>
+                            <div class="small">{{ req.description|truncatechars:120 }}</div>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-warning">{{ req.status }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="mt-3 text-end">
+                    <a href="{% url 'donations' %}" class="btn btn-sm btn-outline-primary">Browse Donations</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Nearby Donations (for donors to see available items near them) -->
+        {% if nearby_donations %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <h4 class="mb-3">
+                    <i class="bi bi-geo-alt me-2"></i>Nearby Available Donations
+                </h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Donor</th>
+                                <th>Quantity</th>
+                                <th>Expires</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for donation in nearby_donations|slice:":6" %}
+                            <tr>
+                                <td>{{ donation.title }}</td>
+                                <td>{% if donation.donor %}{{ donation.donor.name }}{% else %}Anonymous{% endif %}</td>
+                                <td>{{ donation.quantity }} {{ donation.unit }}</td>
+                                <td>{{ donation.expiry_date|date:"M d, Y" }}</td>
+                                <td>
+                                    <span class="badge bg-{% if donation.status == 'Available' %}success{% elif donation.status == 'Reserved' %}warning{% else %}secondary{% endif %}">
+                                        {{ donation.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3 text-end">
+                    <a href="{% url 'donations' %}" class="btn btn-sm btn-outline-primary">View All Donations</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+

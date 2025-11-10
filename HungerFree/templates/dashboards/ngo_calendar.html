@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}NGO Calendar - Schedule Food Requirements{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Schedule Food Requirement</h2>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" class="mb-4">
+    {% csrf_token %}
+    <div class="row">
+      <div class="col-md-3">
+        <label for="required_date" class="form-label">Required Date</label>
+        <input type="date" id="required_date" name="required_date" class="form-control" required>
+      </div>
+      <div class="col-md-3">
+        <label for="required_time" class="form-label">Required Time</label>
+        <input type="time" id="required_time" name="required_time" class="form-control" required>
+      </div>
+      <div class="col-md-3">
+        <label for="estimated_servings" class="form-label">Estimated Servings</label>
+        <input type="number" id="estimated_servings" name="estimated_servings" class="form-control" min="0" value="0">
+      </div>
+      <div class="col-md-3 d-flex align-items-end">
+        <button class="btn btn-primary w-100" type="submit">Schedule Requirement</button>
+      </div>
+    </div>
+
+    <div class="row mt-3">
+      <div class="col-12">
+        <label for="description" class="form-label">Description / Notes (optional)</label>
+        <textarea id="description" name="description" class="form-control" rows="3"></textarea>
+      </div>
+    </div>
+  </form>
+
+  <h3 class="mt-4">Upcoming Requirements</h3>
+  {% if requirements %}
+    <div class="list-group">
+      {% for req in requirements %}
+        <div class="list-group-item">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{ req.required_date }} {{ req.required_time }}</h5>
+            <small class="text-muted">Status: {{ req.status }}</small>
+          </div>
+          <p class="mb-1">Estimated servings: {{ req.estimated_servings }}</p>
+          {% if req.description %}
+            <small class="text-muted">{{ req.description }}</small>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-muted">No scheduled requirements yet.</p>
+  {% endif %}
+
+</div>
+{% endblock %}

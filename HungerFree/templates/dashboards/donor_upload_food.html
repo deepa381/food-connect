@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card shadow-sm">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="bi bi-upload me-2"></i>Upload Food Donation</h5>
+          </div>
+          <div class="card-body">
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+              {% endfor %}
+            {% endif %}
+
+            <form method="POST" enctype="multipart/form-data" action="" class="row g-3">
+              {% csrf_token %}
+
+              <div class="col-md-6">
+                <label class="form-label">Title</label>
+                <input type="text" name="title" class="form-control" required>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Quantity</label>
+                <input type="number" name="quantity" class="form-control" min="1" value="1" required>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Unit</label>
+                <input type="text" name="unit" class="form-control" placeholder="e.g., servings, kg" required>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Expiry Date</label>
+                <input type="date" name="expiry_date" class="form-control" required>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label">Location (City)</label>
+                <input type="text" name="location" class="form-control" placeholder="Enter city or area" required>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Latitude (optional)</label>
+                <input type="text" name="latitude" class="form-control">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Longitude (optional)</label>
+                <input type="text" name="longitude" class="form-control">
+              </div>
+
+              <div class="col-12">
+                <label class="form-label">Description</label>
+                <textarea name="description" class="form-control" rows="3"></textarea>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Calories</label>
+                <input type="text" name="calories" class="form-control">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Protein</label>
+                <input type="text" name="protein" class="form-control">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Carbs</label>
+                <input type="text" name="carbs" class="form-control">
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Fats</label>
+                <input type="text" name="fats" class="form-control">
+              </div>
+
+              <div class="col-12">
+                <label class="form-label">Nutrition Notes</label>
+                <input type="text" name="nutrition_notes" class="form-control">
+              </div>
+
+              <div class="col-12">
+                <label class="form-label">Food Image (optional)</label>
+                <input type="file" name="food_image" class="form-control">
+              </div>
+
+              <div class="col-12 text-center mt-3">
+                <button type="submit" class="btn btn-success px-4"><i class="bi bi-upload me-2"></i>Submit Donation</button>
+                <a href="{% url 'donor_dashboard' %}" class="btn btn-secondary ms-2">Cancel</a>
+              </div>
+            </form>
+
+            {% if upcoming_requirements %}
+            <hr />
+            <h6 class="mt-3">Upcoming Food Requests Near You</h6>
+            <ul class="list-group mt-2">
+                {% for req in upcoming_requirements|slice:":5" %}
+                    <li class="list-group-item">
+                        <strong>{{ req.ngo.name }}</strong> — {{ req.estimated_servings }} servings on {{ req.required_date|date:"M d, Y" }} at {{ req.required_time|time:"H:i" }}
+                        <div><small class="text-muted">{{ req.description }}</small></div>
+                    </li>
+                {% endfor %}
+            </ul>
+            <div class="mt-2 text-end">
+                <a href="{% url 'donations' %}" class="btn btn-sm btn-outline-primary">Browse Donations</a>
+            </div>
+            {% endif %}
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
